@@ -44,7 +44,7 @@ async function api<T>(path: string, userId?: number, init?: RequestInit): Promis
 }
 
 export default function DashboardPage() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const { state, dispatch } = useCart()
 
   const [mounted, setMounted] = useState(false)
@@ -54,6 +54,11 @@ export default function DashboardPage() {
   const [allCourses, setAllCourses] = useState<any[]>([])
   const [showAllCourses, setShowAllCourses] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+
+  const handleLogout = () => {
+    logout()
+    window.location.href = "http://localhost:8080"
+  }
 
   useEffect(() => setMounted(true), [])
 
@@ -170,8 +175,8 @@ export default function DashboardPage() {
                     )}
                   </Link>
                 </Button>
-                <Button variant="outline" asChild>
-                  <Link href="/logout">Sign Out</Link>
+                <Button variant="outline" onClick={handleLogout}>
+                  Sign Out
                 </Button>
               </div>
             </div>
