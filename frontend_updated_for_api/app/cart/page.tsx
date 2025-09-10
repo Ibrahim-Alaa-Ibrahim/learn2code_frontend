@@ -174,7 +174,7 @@ export default function CartPage() {
                     <Link href="/checkout">Proceed to Checkout</Link>
                   </Button>
                   <Button variant="outline" className="w-full rounded-xl bg-transparent" asChild>
-                    <Link href="/courses">Continue Shopping</Link>
+                    <Link href="/dashboard">Continue Shopping</Link>
                   </Button>
                 </div>
 
