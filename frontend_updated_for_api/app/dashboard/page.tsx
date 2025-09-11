@@ -25,6 +25,8 @@ import {
 } from "lucide-react"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
+const FRONTEND_ORIGIN =
+  process.env.NEXT_PUBLIC_FRONTEND_ORIGIN || "http://localhost:3000"
 
 async function api<T>(path: string, userId?: number, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -58,7 +60,7 @@ export default function DashboardPage() {
   const handleLogout = () => {
     logout()
     // redirect to frontend home (not backend)
-    window.location.href = "http://localhost:3000"
+    window.location.href = FRONTEND_ORIGIN
   }
 
   useEffect(() => setMounted(true), [])
@@ -161,7 +163,7 @@ export default function DashboardPage() {
               <Button variant="outline" asChild>
                 <Link href="/student/dashboard">Student View</Link>
               </Button>
-              {/* NEW Parent View button */}
+              {/* Parent View button */}
               <Button variant="outline" asChild>
                 <Link href="/parent/dashboard">Parent View</Link>
               </Button>
@@ -234,7 +236,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <Card className="bg-gradient-to-r from紫-500 to-purple-600 text-white">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
