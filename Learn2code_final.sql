@@ -106,3 +106,12 @@ CREATE TABLE IF NOT EXISTS public.user_courses (
 );
 CREATE INDEX IF NOT EXISTS idx_user_courses_user ON public.user_courses(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_courses_course ON public.user_courses(course_id);
+
+-- Add course pictures
+ALTER TABLE public.courses ADD COLUMN IF NOT EXISTS picture VARCHAR(255);
+
+UPDATE public.courses SET picture = 'https://example.com/images/python.png' WHERE title = 'Python Basics';
+UPDATE public.courses SET picture = 'https://example.com/images/js.png' WHERE title = 'JavaScript Fundamentals';
+UPDATE public.courses SET picture = 'https://example.com/images/web.png' WHERE title = 'Web Design Magic';
+UPDATE public.courses SET picture = 'https://example.com/images/scratch.png' WHERE title = 'Scratch Basics';
+UPDATE public.courses SET picture = 'https://example.com/images/ml.png' WHERE title = 'Machine Learning 101';
