@@ -1,16 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { useAuth } from "@/lib/auth-context"
-import { useCart } from "@/lib/cart-context"
+import AuthGuard from "@/lib/auth-guard";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Input } from "@/components/ui/input"
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import {
   Code,
   BookOpen,
@@ -22,11 +24,10 @@ import {
   Search,
   ChevronRight,
   ShoppingCart,
-} from "lucide-react"
+} from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-const FRONTEND_ORIGIN =
-  process.env.NEXT_PUBLIC_FRONTEND_ORIGIN || "http://localhost:3000"
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080";
+const FRONTEND_ORIGIN = process.env.NEXT_PUBLIC_FRONTEND_ORIGIN || "http://localhost:3000";
 
 async function api<T>(path: string, userId?: number, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -37,72 +38,72 @@ async function api<T>(path: string, userId?: number, init?: RequestInit): Promis
       ...(userId ? { "X-User-Id": String(userId) } : {}),
     },
     cache: "no-store",
-  })
+  });
   if (!res.ok) {
-    const msg = await res.text().catch(() => "")
-    throw new Error(msg || `Request failed (${res.status})`)
+    const msg = await res.text().catch(() => "");
+    throw new Error(msg || `Request failed (${res.status})`);
   }
-  return res.json()
+  return res.json();
 }
 
-export default function DashboardPage() {
-  const { user, isAuthenticated, logout } = useAuth()
-  const { state, dispatch } = useCart()
+function DashboardPage() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const { state, dispatch } = useCart();
 
-  const [mounted, setMounted] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([])
-  const [allCourses, setAllCourses] = useState<any[]>([])
-  const [showAllCourses, setShowAllCourses] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
+  const [allCourses, setAllCourses] = useState<any[]>([]);
+  const [showAllCourses, setShowAllCourses] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleLogout = () => {
-    logout()
+    logout();
     // redirect to frontend home (not backend)
-    window.location.href = FRONTEND_ORIGIN
-  }
+    window.location.href = FRONTEND_ORIGIN;
+  };
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    let alive = true
+    let alive = true;
     async function run() {
       try {
-        const catalog = await api<any[]>("/api/courses")
-        if (!alive) return
-        setAllCourses(catalog)
+        const catalog = await api<any[]>("/api/courses");
+        if (!alive) return;
+        setAllCourses(catalog);
 
         if (isAuthenticated && user?.id) {
-          const myCourses = await api<any[]>("/api/me/courses", user.id)
-          if (!alive) return
-          setEnrolledCourses(myCourses)
+          const myCourses = await api<any[]>("/api/me/courses", user.id);
+          if (!alive) return;
+          setEnrolledCourses(myCourses);
         } else {
-          setEnrolledCourses([])
+          setEnrolledCourses([]);
         }
       } catch (e) {
-        console.error(e)
-        setAllCourses([])
-        setEnrolledCourses([])
+        console.error(e);
+        setAllCourses([]);
+        setEnrolledCourses([]);
       } finally {
-        if (alive) setLoading(false)
+        if (alive) setLoading(false);
       }
     }
-    run()
+    run();
     return () => {
-      alive = false
-    }
-  }, [isAuthenticated, user?.id])
+      alive = false;
+    };
+  }, [isAuthenticated, user?.id]);
 
   const filteredCourses = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase()
-    if (!term) return allCourses
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return allCourses;
     return allCourses.filter(
       (c) =>
         c.title?.toLowerCase().includes(term) ||
         c.description?.toLowerCase().includes(term)
-    )
-  }, [allCourses, searchTerm])
+    );
+  }, [allCourses, searchTerm]);
 
   const addToCart = (course: any) => {
     dispatch({
@@ -115,8 +116,8 @@ export default function DashboardPage() {
         instructor: course.instructor ?? "Learn2Code",
         duration: course.duration ?? "12 weeks",
       },
-    })
-  }
+    });
+  };
 
   if (!mounted || loading) {
     return (
@@ -128,7 +129,7 @@ export default function DashboardPage() {
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
-    )
+    );
   }
 
   const userStats = {
@@ -138,7 +139,7 @@ export default function DashboardPage() {
     xp: enrolledCourses.length * 100,
     streak: 0,
     badges: 0,
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-blue-50 to-green-50">
@@ -236,7 +237,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-r from紫-500 to-purple-600 text-white">
+            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -473,5 +474,14 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+export default function Page() {
+  // Protect the dashboard route with AuthGuard while keeping the full UI.
+  return (
+    <AuthGuard>
+      <DashboardPage />
+    </AuthGuard>
+  );
 }
