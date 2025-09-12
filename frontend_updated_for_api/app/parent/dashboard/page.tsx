@@ -14,6 +14,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/auth-context";
 import { apiFetch, API_BASE } from "@/lib/api";
 
+const FRONTEND_ORIGIN =
+  process.env.NEXT_PUBLIC_FRONTEND_ORIGIN ?? "http://localhost:3000";
+
 type Payment = {
   id: number;
   amount: number;
@@ -57,12 +60,17 @@ const childrenSeed: ChildCard[] = [
 ];
 
 export default function ParentDashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const displayName = user?.name ?? "Parent";
   const userEmail   = user?.email ?? "";
 
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    window.location.href = FRONTEND_ORIGIN;
+  };
 
   useEffect(() => {
     if (!user?.id) return;
@@ -120,6 +128,9 @@ export default function ParentDashboard() {
               <Button variant="outline" size="sm">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
               </Button>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -432,5 +443,6 @@ export default function ParentDashboard() {
             </div>
           </div>
         </div>
-        );
-        }
+      </div>
+    );
+}
