@@ -22,6 +22,8 @@ import {
 } from "lucide-react"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
+const FRONTEND_ORIGIN =
+  process.env.NEXT_PUBLIC_FRONTEND_ORIGIN ?? "http://localhost:3000"
 
 // small helper that always sets JSON + X-User-Id header (if userId provided)
 async function api<T>(path: string, userId?: number, init?: RequestInit): Promise<T> {
@@ -42,7 +44,7 @@ async function api<T>(path: string, userId?: number, init?: RequestInit): Promis
 }
 
 export default function StudentDashboard() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
   const { state, dispatch } = useCart()
 
   const [mounted, setMounted] = useState(false)
@@ -52,6 +54,11 @@ export default function StudentDashboard() {
   const [allCourses, setAllCourses] = useState<any[]>([])
   const [showAllCourses, setShowAllCourses] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+
+  const handleSignOut = () => {
+    logout()
+    window.location.href = FRONTEND_ORIGIN
+  }
 
   useEffect(() => setMounted(true), [])
 
@@ -141,6 +148,9 @@ export default function StudentDashboard() {
             <div className="flex items-center gap-4">
               <Button variant="outline" size="sm" className="rounded-full bg-transparent" asChild>
                 <Link href="/parent/dashboard">Parent View</Link>
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
               </Button>
             </div>
           </div>
